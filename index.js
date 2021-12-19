@@ -8,5 +8,4 @@ app.get("/", (req, res) => {
 });
 app.use('/api/genres', genres);
 
-
 app.listen(5000);
