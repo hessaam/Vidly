@@ -18,32 +18,35 @@ const createGenre = async (document) => {
 	});
 	const result = await genre.save();
 	console.log({ result });
+};
+
+const getGenres = async (query) => {
+	const genres = await Genre.find(query);
+	return genres;
 }
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
+	const genres = await getGenres({});
 	return res.status(200).send(genres);
 });
 
 
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
 	if (req.params?.id) {
-		const desireGenre = genres.filter(genre => genre.id == req.params.id);
+		const desireGenre = await getGenres({ _id: req.params.id });
 		return res.status(200).send(desireGenre);
 	} else {
 		return res.status(404).send("There is no genre with id");
 	}
 });
 
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
 	const { error } = validateGenre(req.body);
 	if (error) {
 		return res.status(400).send(error?.details?.[0]?.message);
 	}
-	const newGenre = {
-		id: genres?.length + 1,
-		name: req.body.name
-	};
-	genres.push(newGenre);
+	await createGenre({ name: req.body.name })
+	const newGenre = await getGenres({ name: req.body.name })
 	res.status(201).send(newGenre);
 });
 
